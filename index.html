@@ -290,6 +290,65 @@ body.light-mode .form-group input, body.light-mode .form-group textarea {
     transform: translateY(-2px);
     filter: brightness(1.1);
 }
+
+/* News Feed Styles */
+.news-section {
+    margin-top: 50px;
+    padding-top: 40px;
+    border-top: 1px solid var(--border-color);
+}
+
+.news-section h2 {
+    color: var(--accent-color);
+    margin-bottom: 25px;
+}
+
+.news-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    text-align: left;
+}
+
+.news-item {
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 12px;
+    padding: 15px;
+    margin-bottom: 12px;
+    border: 1px solid rgba(255, 215, 0, 0.1);
+    transition: 0.3s;
+}
+
+body.light-mode .news-item {
+    background: #fff;
+    border-color: #dee2e6;
+}
+
+.news-item:hover {
+    transform: translateX(10px);
+    border-color: var(--accent-color);
+}
+
+.news-item a {
+    color: var(--text-color);
+    text-decoration: none;
+    font-size: 16px;
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.news-item .meta {
+    font-size: 12px;
+    color: var(--sub-text);
+    margin-top: 5px;
+}
+
+.loading-text {
+    color: var(--sub-text);
+    font-style: italic;
+}
 </style>
 </head>
 
@@ -307,6 +366,15 @@ body.light-mode .form-group input, body.light-mode .form-group textarea {
     <button onclick="generateLotto()" class="main-btn">✨ JACKPOT 번호 뽑기 ✨</button>
 
     <div id="result"></div>
+
+    <!-- Latest News Section -->
+    <div class="news-section">
+        <h2>🔥 실시간 주요 소식 (미정갤) 🔥</h2>
+        <div id="newsList" class="news-list">
+            <p class="loading-text">소식을 불러오는 중입니다...</p>
+        </div>
+        <p class="meta" style="text-align: center; margin-top: 15px;">※ 1분마다 자동으로 갱신됩니다.</p>
+    </div>
 
     <!-- Affiliate Inquiry Form -->
     <div class="inquiry-section">
@@ -346,6 +414,66 @@ function toggleTheme() {
         btn.textContent = '☀️ 라이트 모드로 전환';
     }
 }
+
+// DC Inside News Fetching
+async function fetchDCInsideNews() {
+    const newsList = document.getElementById('newsList');
+    const proxyUrl = 'https://api.allorigins.win/get?url=';
+    const targetUrl = encodeURIComponent('https://gall.dcinside.com/mgallery/board/lists/?id=uspolitics');
+    
+    try {
+        const response = await fetch(`${proxyUrl}${targetUrl}`);
+        if (!response.ok) throw new Error('Network response was not ok');
+        
+        const data = await response.json();
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(data.contents, 'text/html');
+        
+        // Select all table rows in the board list
+        const rows = doc.querySelectorAll('tr.ub-content.us-post');
+        const newsItems = [];
+        
+        for (let row of rows) {
+            // Skip notices (they have 'gall_num' text like '공지')
+            const numField = row.querySelector('.gall_num');
+            if (numField && isNaN(parseInt(numField.textContent))) continue;
+            
+            const titleEl = row.querySelector('.td_lst.gall_tit a');
+            if (titleEl) {
+                const title = titleEl.childNodes[0].textContent.trim();
+                const link = 'https://gall.dcinside.com' + titleEl.getAttribute('href');
+                const authorAttr = row.querySelector('.gall_writer.ub-writer');
+                const author = authorAttr ? (authorAttr.getAttribute('data-nick') || authorAttr.textContent.trim()) : '알 수 없음';
+                const dateEl = row.querySelector('.gall_date');
+                const date = dateEl ? (dateEl.getAttribute('title') || dateEl.textContent) : '';
+                
+                newsItems.push({ title, link, author, date });
+            }
+            
+            if (newsItems.length >= 5) break;
+        }
+        
+        if (newsItems.length === 0) {
+            newsList.innerHTML = '<p class="loading-text">가져올 소식이 없습니다.</p>';
+            return;
+        }
+        
+        newsList.innerHTML = newsItems.map(item => `
+            <div class="news-item">
+                <a href="${item.link}" target="_blank"> ${item.title}</a>
+                <div class="meta">작성자: ${item.author} | ${item.date}</div>
+            </div>
+        `).join('');
+        
+    } catch (error) {
+        console.error('Error fetching news:', error);
+        newsList.innerHTML = '<p class="loading-text">소식을 불러오는데 실패했습니다. (CORS 프록시 제한일 수 있습니다)</p>';
+    }
+}
+
+// Initial fetch and set interval
+fetchDCInsideNews();
+setInterval(fetchDCInsideNews, 60000);
 
 function getColor(num) {
     if (num <= 10) return "yellow";
