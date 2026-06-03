@@ -30,10 +30,10 @@ The "Casino Lotto Machine" is a framework-less web application that provides use
     - ES6 syntax (arrow functions, template literals).
     - DOM manipulation to dynamically generate and render lottery "tickets".
 
-## Current Plan: Push to GitHub
-Objective: Upload the codebase to the official repository.
+## Current Plan: Deploy to GitHub Pages
+Objective: Make the "Casino Lotto Machine" accessible online via GitHub Pages.
 
-1.  **Initialize Git**: Ensure the workspace is ready for version control.
-2.  **Add Remote**: Link the local repository to `https://github.com/houngent-cmd/product-builder.git`.
-3.  **Stage & Commit**: Prepare all files (`index.html`, `main.js`, `style.css`, `README.md`, `GEMINI.md`, `blueprint.md`) for the first push.
-4.  **Push**: Upload to the `main` branch.
+1.  **Create gh-pages branch**: Create a dedicated branch for deployment.
+2.  **Push to GitHub**: Upload the code to the `gh-pages` branch.
+3.  **Final Verification**: Confirm the push was successful and provide the live URL.
+
