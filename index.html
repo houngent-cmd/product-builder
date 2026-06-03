@@ -223,6 +223,73 @@ body.light-mode .ticket h3 {
     color: #bfa75a;
     font-size: 13px;
 }
+
+/* Inquiry Form Styles */
+.inquiry-section {
+    margin-top: 50px;
+    padding-top: 40px;
+    border-top: 1px solid var(--border-color);
+    text-align: left;
+}
+
+.inquiry-section h2 {
+    color: var(--accent-color);
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    color: var(--accent-color);
+    font-weight: bold;
+}
+
+.form-group input, .form-group textarea {
+    width: 100%;
+    padding: 12px 15px;
+    border-radius: 12px;
+    border: 2px solid var(--border-color);
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-color);
+    font-family: inherit;
+    font-size: 16px;
+    outline: none;
+    transition: 0.3s;
+}
+
+body.light-mode .form-group input, body.light-mode .form-group textarea {
+    background: #fff;
+    color: #212529;
+}
+
+.form-group input:focus, .form-group textarea:focus {
+    border-color: var(--accent-color);
+    box-shadow: 0 0 10px var(--shadow-color);
+}
+
+.submit-btn {
+    width: 100%;
+    padding: 15px;
+    border-radius: 50px;
+    border: none;
+    background: var(--accent-color);
+    color: #fff;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+    box-shadow: 0 4px 15px var(--shadow-color);
+}
+
+.submit-btn:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.1);
+}
 </style>
 </head>
 
@@ -240,6 +307,26 @@ body.light-mode .ticket h3 {
     <button onclick="generateLotto()" class="main-btn">✨ JACKPOT 번호 뽑기 ✨</button>
 
     <div id="result"></div>
+
+    <!-- Affiliate Inquiry Form -->
+    <div class="inquiry-section">
+        <h2>🤝 제휴 문의 🤝</h2>
+        <form action="https://formspree.io/f/mnjyagnp" method="POST">
+            <div class="form-group">
+                <label for="name">성함/업체명</label>
+                <input type="text" id="name" name="name" placeholder="성함 또는 업체명을 입력해주세요" required>
+            </div>
+            <div class="form-group">
+                <label for="email">이메일 주소</label>
+                <input type="email" id="email" name="_replyto" placeholder="연락받으실 이메일을 입력해주세요" required>
+            </div>
+            <div class="form-group">
+                <label for="message">문의 내용</label>
+                <textarea id="message" name="message" rows="5" placeholder="제휴 관련 문의 내용을 입력해주세요" required></textarea>
+            </div>
+            <button type="submit" class="submit-btn">문의 내용 보내기</button>
+        </form>
+    </div>
 
     <div class="footer-text">
         ※ 재미로 사용하는 랜덤 번호 추천 서비스입니다.

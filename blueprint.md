@@ -8,6 +8,7 @@ The "Casino Lotto Machine" is a framework-less web application that provides use
 ### Features
 - **Random Number Generation**: Generates 5 sets of lottery numbers. Each set includes 6 sorted main numbers and 1 bonus number.
 - **Theme Toggle**: A fixed button allows users to switch between a "Casino Dark" mode and a "Clean Light" mode.
+- **Affiliate Inquiry Form**: A integrated form using Formspree to collect name, email, and messages for business inquiries.
 - **Visual Feedback**: Buttons and cards use interactive gradients, shadows, and hover effects.
 - **Color Coding**: Lottery balls are color-coded based on their value ranges (1-10: Yellow, 11-20: Blue, 21-30: Red, 31-40: Gray, 41-45: Green).
 - **Responsive Design**: The application adapts to different screen sizes for mobile and web compatibility.
