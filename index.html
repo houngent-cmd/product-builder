@@ -6,6 +6,30 @@
 <title>카지노 로또 번호 추천기</title>
 
 <style>
+:root {
+    --bg-main: radial-gradient(circle at top, rgba(255, 215, 0, 0.25), transparent 35%),
+               linear-gradient(135deg, #050505, #240000 45%, #061b0f);
+    --container-bg: linear-gradient(145deg, rgba(20, 0, 0, 0.95), rgba(0, 45, 24, 0.95));
+    --text-color: #fff;
+    --accent-color: #ffd700;
+    --border-color: #d4af37;
+    --shadow-color: rgba(212, 175, 55, 0.8);
+    --ticket-bg: radial-gradient(circle at center, #0b6b34, #003b1d);
+    --sub-text: #f5e6a3;
+}
+
+body.light-mode {
+    --bg-main: radial-gradient(circle at top, rgba(0, 123, 255, 0.1), transparent 35%),
+               linear-gradient(135deg, #f8f9fa, #e9ecef 45%, #dee2e6);
+    --container-bg: linear-gradient(145deg, #ffffff, #f1f3f5);
+    --text-color: #212529;
+    --accent-color: #1c7ed6;
+    --border-color: #adb5bd;
+    --shadow-color: rgba(0, 0, 0, 0.1);
+    --ticket-bg: radial-gradient(circle at center, #f1f3f5, #e9ecef);
+    --sub-text: #495057;
+}
+
 * {
     box-sizing: border-box;
 }
@@ -14,49 +38,71 @@ body {
     margin: 0;
     min-height: 100vh;
     font-family: 'Arial', sans-serif;
-    color: #fff;
+    color: var(--text-color);
     text-align: center;
-    background:
-        radial-gradient(circle at top, rgba(255, 215, 0, 0.25), transparent 35%),
-        linear-gradient(135deg, #050505, #240000 45%, #061b0f);
+    background: var(--bg-main);
     padding: 40px 15px;
+    transition: background 0.3s, color 0.3s;
+}
+
+.theme-toggle {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+}
+
+.theme-toggle button {
+    padding: 10px 20px;
+    border-radius: 25px;
+    font-size: 14px;
+    background: var(--accent-color);
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    transition: 0.3s;
 }
 
 .container {
     max-width: 950px;
     margin: auto;
     padding: 30px;
-    border: 3px solid #d4af37;
+    border: 3px solid var(--border-color);
     border-radius: 30px;
-    background:
-        linear-gradient(145deg, rgba(20, 0, 0, 0.95), rgba(0, 45, 24, 0.95));
+    background: var(--container-bg);
     box-shadow:
-        0 0 25px rgba(212, 175, 55, 0.8),
+        0 0 25px var(--shadow-color),
         inset 0 0 30px rgba(255, 215, 0, 0.15);
+    transition: background 0.3s, border-color 0.3s;
 }
 
 h1 {
     font-size: 42px;
-    color: #ffd700;
+    color: var(--accent-color);
     text-shadow:
         0 0 10px #ff0000,
-        0 0 20px #ffd700;
+        0 0 20px var(--accent-color);
     margin-bottom: 10px;
 }
 
+body.light-mode h1 {
+    text-shadow: none;
+}
+
 p {
-    color: #f5e6a3;
+    color: var(--sub-text);
     font-size: 17px;
 }
 
 .casino-title {
     font-size: 15px;
     letter-spacing: 5px;
-    color: #ffcc00;
+    color: var(--accent-color);
     margin-bottom: 10px;
 }
 
-button {
+.main-btn {
     margin: 25px 0;
     padding: 17px 36px;
     font-size: 20px;
@@ -72,14 +118,14 @@ button {
     transition: 0.2s;
 }
 
-button:hover {
+.main-btn:hover {
     transform: translateY(-3px);
     box-shadow:
         0 0 25px rgba(255, 215, 0, 1),
         0 8px 0 #8b6508;
 }
 
-button:active {
+.main-btn:active {
     transform: translateY(4px);
     box-shadow:
         0 0 10px rgba(255, 215, 0, 0.8),
@@ -93,15 +139,19 @@ button:active {
 .ticket {
     position: relative;
     overflow: hidden;
-    background:
-        radial-gradient(circle at center, #0b6b34, #003b1d);
+    background: var(--ticket-bg);
     margin: 20px 0;
     padding: 25px 15px;
     border-radius: 22px;
-    border: 2px solid #ffd700;
+    border: 2px solid var(--accent-color);
     box-shadow:
         0 0 18px rgba(255, 215, 0, 0.45),
         inset 0 0 25px rgba(0, 0, 0, 0.45);
+    transition: background 0.3s, border-color 0.3s;
+}
+
+body.light-mode .ticket {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
 }
 
 .ticket::before {
@@ -117,10 +167,14 @@ button:active {
 
 .ticket h3 {
     position: relative;
-    color: #ffd700;
+    color: var(--accent-color);
     font-size: 22px;
     margin-bottom: 18px;
     text-shadow: 0 0 8px #000;
+}
+
+body.light-mode .ticket h3 {
+    text-shadow: none;
 }
 
 .ball {
@@ -149,18 +203,18 @@ button:active {
 .plus {
     font-size: 28px;
     font-weight: bold;
-    color: #ffd700;
+    color: var(--accent-color);
     margin: 0 8px;
 }
 
 .bonus {
     background: linear-gradient(145deg, #ff006e, #7209b7);
-    border-color: #ffd700;
+    border-color: var(--accent-color);
 }
 
 .bonus-text {
     margin-top: 12px;
-    color: #ffd700;
+    color: var(--accent-color);
     font-size: 15px;
 }
 
@@ -174,12 +228,16 @@ button:active {
 
 <body>
 
+<div class="theme-toggle">
+    <button onclick="toggleTheme()" id="themeBtn">☀️ 라이트 모드로 전환</button>
+</div>
+
 <div class="container">
     <div class="casino-title">CASINO LOTTO MACHINE</div>
     <h1>🎰 카지노 로또 번호 추천기 🎰</h1>
     <p>버튼을 누르면 5개의 추천 조합과 보너스 번호가 나옵니다.</p>
 
-    <button onclick="generateLotto()">✨ JACKPOT 번호 뽑기 ✨</button>
+    <button onclick="generateLotto()" class="main-btn">✨ JACKPOT 번호 뽑기 ✨</button>
 
     <div id="result"></div>
 
@@ -189,6 +247,19 @@ button:active {
 </div>
 
 <script>
+function toggleTheme() {
+    const body = document.body;
+    const btn = document.getElementById('themeBtn');
+    
+    body.classList.toggle('light-mode');
+    
+    if (body.classList.contains('light-mode')) {
+        btn.textContent = '🌙 다크 모드로 전환';
+    } else {
+        btn.textContent = '☀️ 라이트 모드로 전환';
+    }
+}
+
 function getColor(num) {
     if (num <= 10) return "yellow";
     if (num <= 20) return "blue";
@@ -248,3 +319,4 @@ function generateLotto() {
 </script>
 
 </body>
+</html>
