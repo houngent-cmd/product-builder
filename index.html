@@ -1,14 +1,250 @@
-<!doctype html>
-<html lang="en">
+<!DOCTYPE html>
+<html lang="ko">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Hello World</title>
-  <link href='/style.css' rel='stylesheet'>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>카지노 로또 번호 추천기</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: 'Arial', sans-serif;
+    color: #fff;
+    text-align: center;
+    background:
+        radial-gradient(circle at top, rgba(255, 215, 0, 0.25), transparent 35%),
+        linear-gradient(135deg, #050505, #240000 45%, #061b0f);
+    padding: 40px 15px;
+}
+
+.container {
+    max-width: 950px;
+    margin: auto;
+    padding: 30px;
+    border: 3px solid #d4af37;
+    border-radius: 30px;
+    background:
+        linear-gradient(145deg, rgba(20, 0, 0, 0.95), rgba(0, 45, 24, 0.95));
+    box-shadow:
+        0 0 25px rgba(212, 175, 55, 0.8),
+        inset 0 0 30px rgba(255, 215, 0, 0.15);
+}
+
+h1 {
+    font-size: 42px;
+    color: #ffd700;
+    text-shadow:
+        0 0 10px #ff0000,
+        0 0 20px #ffd700;
+    margin-bottom: 10px;
+}
+
+p {
+    color: #f5e6a3;
+    font-size: 17px;
+}
+
+.casino-title {
+    font-size: 15px;
+    letter-spacing: 5px;
+    color: #ffcc00;
+    margin-bottom: 10px;
+}
+
+button {
+    margin: 25px 0;
+    padding: 17px 36px;
+    font-size: 20px;
+    font-weight: bold;
+    border: none;
+    border-radius: 50px;
+    color: #2b0000;
+    cursor: pointer;
+    background: linear-gradient(145deg, #fff4a3, #d4af37, #ffcc00);
+    box-shadow:
+        0 0 15px rgba(255, 215, 0, 0.8),
+        0 6px 0 #8b6508;
+    transition: 0.2s;
+}
+
+button:hover {
+    transform: translateY(-3px);
+    box-shadow:
+        0 0 25px rgba(255, 215, 0, 1),
+        0 8px 0 #8b6508;
+}
+
+button:active {
+    transform: translateY(4px);
+    box-shadow:
+        0 0 10px rgba(255, 215, 0, 0.8),
+        0 2px 0 #8b6508;
+}
+
+#result {
+    margin-top: 20px;
+}
+
+.ticket {
+    position: relative;
+    overflow: hidden;
+    background:
+        radial-gradient(circle at center, #0b6b34, #003b1d);
+    margin: 20px 0;
+    padding: 25px 15px;
+    border-radius: 22px;
+    border: 2px solid #ffd700;
+    box-shadow:
+        0 0 18px rgba(255, 215, 0, 0.45),
+        inset 0 0 25px rgba(0, 0, 0, 0.45);
+}
+
+.ticket::before {
+    content: "♠ ♥ ♦ ♣";
+    position: absolute;
+    top: 8px;
+    left: 0;
+    width: 100%;
+    color: rgba(255, 215, 0, 0.15);
+    font-size: 28px;
+    letter-spacing: 20px;
+}
+
+.ticket h3 {
+    position: relative;
+    color: #ffd700;
+    font-size: 22px;
+    margin-bottom: 18px;
+    text-shadow: 0 0 8px #000;
+}
+
+.ball {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    margin: 6px;
+    font-weight: bold;
+    font-size: 19px;
+    color: white;
+    border: 3px solid rgba(255,255,255,0.85);
+    box-shadow:
+        inset -4px -4px 8px rgba(0,0,0,0.35),
+        0 0 10px rgba(255,255,255,0.4);
+}
+
+.yellow { background: linear-gradient(145deg, #ffd43b, #f08c00); }
+.blue { background: linear-gradient(145deg, #4dabf7, #1864ab); }
+.red { background: linear-gradient(145deg, #ff6b6b, #c92a2a); }
+.gray { background: linear-gradient(145deg, #adb5bd, #495057); }
+.green { background: linear-gradient(145deg, #69db7c, #2b8a3e); }
+
+.plus {
+    font-size: 28px;
+    font-weight: bold;
+    color: #ffd700;
+    margin: 0 8px;
+}
+
+.bonus {
+    background: linear-gradient(145deg, #ff006e, #7209b7);
+    border-color: #ffd700;
+}
+
+.bonus-text {
+    margin-top: 12px;
+    color: #ffd700;
+    font-size: 15px;
+}
+
+.footer-text {
+    margin-top: 30px;
+    color: #bfa75a;
+    font-size: 13px;
+}
+</style>
 </head>
+
 <body>
-  <h1>Hello, world!</h1>
-  <button onclick="console.log('hello');">Press me</button>
-  <script defer type="text/javascript" src="/main.js"></script>
+
+<div class="container">
+    <div class="casino-title">CASINO LOTTO MACHINE</div>
+    <h1>🎰 카지노 로또 번호 추천기 🎰</h1>
+    <p>버튼을 누르면 5개의 추천 조합과 보너스 번호가 나옵니다.</p>
+
+    <button onclick="generateLotto()">✨ JACKPOT 번호 뽑기 ✨</button>
+
+    <div id="result"></div>
+
+    <div class="footer-text">
+        ※ 재미로 사용하는 랜덤 번호 추천 서비스입니다.
+    </div>
+</div>
+
+<script>
+function getColor(num) {
+    if (num <= 10) return "yellow";
+    if (num <= 20) return "blue";
+    if (num <= 30) return "red";
+    if (num <= 40) return "gray";
+    return "green";
+}
+
+function generateOneSet() {
+    let nums = [];
+
+    while (nums.length < 7) {
+        let n = Math.floor(Math.random() * 45) + 1;
+
+        if (!nums.includes(n)) {
+            nums.push(n);
+        }
+    }
+
+    let bonus = nums.pop();
+    nums.sort((a, b) => a - b);
+
+    return {
+        numbers: nums,
+        bonus: bonus
+    };
+}
+
+function generateLotto() {
+    const result = document.getElementById("result");
+    result.innerHTML = "";
+
+    for (let i = 1; i <= 5; i++) {
+        const lotto = generateOneSet();
+
+        let html = `
+            <div class="ticket">
+                <h3>🎲 ${i}번 추천 조합 🎲</h3>
+        `;
+
+        lotto.numbers.forEach(num => {
+            html += `
+                <span class="ball ${getColor(num)}">${num}</span>
+            `;
+        });
+
+        html += `
+                <span class="plus">+</span>
+                <span class="ball bonus">${lotto.bonus}</span>
+                <div class="bonus-text">BONUS NUMBER</div>
+            </div>
+        `;
+
+        result.innerHTML += html;
+    }
+}
+</script>
+
 </body>
-</html>
