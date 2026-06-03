@@ -415,60 +415,75 @@ function toggleTheme() {
     }
 }
 
-// DC Inside News Fetching
+// DC Inside News Fetching with Proxy Fallback
 async function fetchDCInsideNews() {
     const newsList = document.getElementById('newsList');
-    const proxyUrl = 'https://api.allorigins.win/get?url=';
-    const targetUrl = encodeURIComponent('https://gall.dcinside.com/mgallery/board/lists/?id=uspolitics');
+    const targetUrl = 'https://gall.dcinside.com/mgallery/board/lists/?id=uspolitics';
     
-    try {
-        const response = await fetch(`${proxyUrl}${targetUrl}`);
-        if (!response.ok) throw new Error('Network response was not ok');
-        
-        const data = await response.json();
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(data.contents, 'text/html');
-        
-        // Select all table rows in the board list
-        const rows = doc.querySelectorAll('tr.ub-content.us-post');
-        const newsItems = [];
-        
-        for (let row of rows) {
-            // Skip notices (they have 'gall_num' text like '공지')
-            const numField = row.querySelector('.gall_num');
-            if (numField && isNaN(parseInt(numField.textContent))) continue;
+    // Try multiple proxies in case one is down or limited
+    const proxies = [
+        url => `https://api.allorigins.win/get?url=${encodeURIComponent(url)}&_=${Date.now()}`,
+        url => `https://corsproxy.io/?${encodeURIComponent(url + '&_=' + Date.now())}`,
+    ];
+    
+    let lastError = null;
+    
+    for (const getProxyUrl of proxies) {
+        try {
+            const response = await fetch(getProxyUrl(targetUrl));
+            if (!response.ok) throw new Error(`Proxy error: ${response.status}`);
             
-            const titleEl = row.querySelector('.td_lst.gall_tit a');
-            if (titleEl) {
-                const title = titleEl.childNodes[0].textContent.trim();
-                const link = 'https://gall.dcinside.com' + titleEl.getAttribute('href');
-                const authorAttr = row.querySelector('.gall_writer.ub-writer');
-                const author = authorAttr ? (authorAttr.getAttribute('data-nick') || authorAttr.textContent.trim()) : '알 수 없음';
-                const dateEl = row.querySelector('.gall_date');
-                const date = dateEl ? (dateEl.getAttribute('title') || dateEl.textContent) : '';
+            const data = await response.json();
+            // allorigins returns {contents: "..."}, corsproxy.io returns the raw content if used differently, 
+            // but for simplicity, let's assume we handle the json format or raw text.
+            // Adjusting based on common proxy behaviors:
+            let htmlContent = data.contents || data; 
+            
+            if (typeof htmlContent !== 'string') {
+                // If it's a response object from a proxy that doesn't wrap in JSON
+                htmlContent = await response.text();
+            }
+
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(htmlContent, 'text/html');
+            
+            const rows = doc.querySelectorAll('tr.ub-content.us-post');
+            const newsItems = [];
+            
+            for (let row of rows) {
+                const numField = row.querySelector('.gall_num');
+                if (numField && isNaN(parseInt(numField.textContent))) continue;
                 
-                newsItems.push({ title, link, author, date });
+                const titleEl = row.querySelector('.td_lst.gall_tit a');
+                if (titleEl) {
+                    const title = titleEl.childNodes[0].textContent.trim();
+                    const link = 'https://gall.dcinside.com' + titleEl.getAttribute('href');
+                    const authorAttr = row.querySelector('.gall_writer.ub-writer');
+                    const author = authorAttr ? (authorAttr.getAttribute('data-nick') || authorAttr.textContent.trim()) : '알 수 없음';
+                    const dateEl = row.querySelector('.gall_date');
+                    const date = dateEl ? (dateEl.getAttribute('title') || dateEl.textContent) : '';
+                    
+                    newsItems.push({ title, link, author, date });
+                }
+                if (newsItems.length >= 5) break;
             }
             
-            if (newsItems.length >= 5) break;
+            if (newsItems.length > 0) {
+                newsList.innerHTML = newsItems.map(item => `
+                    <div class="news-item">
+                        <a href="${item.link}" target="_blank"> ${item.title}</a>
+                        <div class="meta">작성자: ${item.author} | ${item.date}</div>
+                    </div>
+                `).join('');
+                return; // Success!
+            }
+        } catch (error) {
+            console.warn(`Proxy failed:`, error);
+            lastError = error;
         }
-        
-        if (newsItems.length === 0) {
-            newsList.innerHTML = '<p class="loading-text">가져올 소식이 없습니다.</p>';
-            return;
-        }
-        
-        newsList.innerHTML = newsItems.map(item => `
-            <div class="news-item">
-                <a href="${item.link}" target="_blank"> ${item.title}</a>
-                <div class="meta">작성자: ${item.author} | ${item.date}</div>
-            </div>
-        `).join('');
-        
-    } catch (error) {
-        console.error('Error fetching news:', error);
-        newsList.innerHTML = '<p class="loading-text">소식을 불러오는데 실패했습니다. (CORS 프록시 제한일 수 있습니다)</p>';
     }
+    
+    newsList.innerHTML = `<p class="loading-text">소식을 불러오는데 실패했습니다. (프록시 서버 지연 중)</p>`;
 }
 
 // Initial fetch and set interval
